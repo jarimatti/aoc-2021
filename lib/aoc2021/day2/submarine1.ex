@@ -1,4 +1,6 @@
 defmodule Aoc2021.Day2.Submarine1 do
+  @moduledoc false
+
   defstruct [:horizontal, :depth]
 
   alias Aoc2021.Day2.Command

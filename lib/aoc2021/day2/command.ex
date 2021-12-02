@@ -1,7 +1,11 @@
 defmodule Aoc2021.Day2.Command do
+  @moduledoc false
+
   @type t() :: {:forward | :down | :up, non_neg_integer()}
 
   defmodule Parser do
+    @moduledoc false
+
     alias Aoc2021.Day2.Command
 
     @spec parse_command(binary()) :: Command.t()

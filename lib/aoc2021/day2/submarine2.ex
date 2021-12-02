@@ -1,4 +1,6 @@
 defmodule Aoc2021.Day2.Submarine2 do
+  @moduledoc false
+
   defstruct [:horizontal, :depth, :aim]
 
   alias Aoc2021.Day2.Command
@@ -16,17 +18,11 @@ defmodule Aoc2021.Day2.Submarine2 do
 
   @spec apply(Command.t(), t()) :: t()
   def apply({:forward, x}, submarine) do
-    sub = %__MODULE__{
+    %__MODULE__{
       submarine
       | horizontal: submarine.horizontal + x,
         depth: submarine.depth + submarine.aim * x
     }
-
-    if sub.depth < 0 do
-      IO.inspect(sub)
-    end
-
-    sub
   end
 
   def apply({:down, x}, submarine) do

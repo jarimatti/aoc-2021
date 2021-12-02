@@ -32,23 +32,23 @@ defmodule Aoc2021.Day1 do
   @spec count_increments(Enum.t()) :: non_neg_integer()
   def count_increments(input) do
     input
-    |> Stream.scan(&isNextGreater/2)
-    |> Stream.map(&takeDelta/1)
+    |> Stream.scan(&is_next_greater/2)
+    |> Stream.map(&take_delta/1)
     |> Enum.sum()
   end
 
-  defp takeDelta({_, d}), do: d
-  defp takeDelta(_), do: 0
+  defp take_delta({_, d}), do: d
+  defp take_delta(_), do: 0
 
-  defp isNextGreater(next, {prev, _}) when next > prev do
+  defp is_next_greater(next, {prev, _}) when next > prev do
     {next, 1}
   end
 
-  defp isNextGreater(next, prev) when is_integer(prev) and next > prev do
+  defp is_next_greater(next, prev) when is_integer(prev) and next > prev do
     {next, 1}
   end
 
-  defp isNextGreater(next, _) do
+  defp is_next_greater(next, _) do
     {next, 0}
   end
 
