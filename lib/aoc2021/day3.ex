@@ -38,12 +38,12 @@ defmodule Aoc2021.Day3 do
 
     def oxygen_generator_rating(input) do
       l = input |> hd() |> String.length()
-      rating(input, l - 1, &oxygen_generator_criteria/1)
+      rating(input, {0, l}, &oxygen_generator_criteria/1)
     end
 
     def co2_scrubber_rating(input) do
       l = input |> hd() |> String.length()
-      rating(input, l - 1, &co2_scrubber_criteria/1)
+      rating(input, {0, l}, &co2_scrubber_criteria/1)
     end
 
     defp oxygen_generator_criteria({z, o}) when z > o, do: "0"
@@ -57,22 +57,20 @@ defmodule Aoc2021.Day3 do
       x
     end
 
-    def rating(input, p, f) do
+    def rating(input, {p, l}, f) do
       bit_counts =
         input
         |> Day3.count_bits_by_position()
-        |> Map.get(p)
+        |> Map.get(l - p - 1)
 
       mcv = f.(bit_counts)
 
       nis =
         Enum.filter(input, fn i ->
-          i
-          |> String.reverse()
-          |> String.at(p) == mcv
+          String.at(i, p) == mcv
         end)
 
-      rating(nis, p - 1, f)
+      rating(nis, {p + 1, l}, f)
     end
   end
 
