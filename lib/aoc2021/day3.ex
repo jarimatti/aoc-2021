@@ -3,10 +3,36 @@ defmodule Aoc2021.Day3 do
   See https://adventofcode.com/2021/day/3
   """
 
+  defmodule Part1 do
+    @spec gamma([{any, {integer, integer}}]) :: integer
+    def gamma(list) do
+      digits_to_number(list, &gamma_digit/1)
+    end
+
+    @spec epsilon([{any, {integer, integer}}]) :: integer
+    def epsilon(list) do
+      digits_to_number(list, &epsilon_digit/1)
+    end
+
+    defp digits_to_number(list, f) do
+      list
+      |> Enum.map(fn {_, x} -> x end)
+      |> Enum.map(f)
+      |> Enum.reverse()
+      |> Integer.undigits(2)
+    end
+
+    defp gamma_digit({a, b}) when a > b, do: 0
+    defp gamma_digit(_), do: 1
+
+    defp epsilon_digit({a, b}) when a > b, do: 1
+    defp epsilon_digit(_), do: 0
+  end
+
   @spec solve_part1 :: integer
   def solve_part1() do
     input = read_input() |> count_bits_by_position()
-    epsilon(input) * gamma(input)
+    Part1.epsilon(input) * Part1.gamma(input)
   end
 
   @spec read_input() :: Enum.t()
@@ -20,28 +46,6 @@ defmodule Aoc2021.Day3 do
     |> Stream.map(&String.trim/1)
     |> Stream.reject(fn line -> line == "" end)
   end
-
-  defp gamma(list) do
-    digits_to_number(list, &gamma_digit/1)
-  end
-
-  defp epsilon(list) do
-    digits_to_number(list, &epsilon_digit/1)
-  end
-
-  defp digits_to_number(list, f) do
-    list
-    |> Enum.map(fn {_, x} -> x end)
-    |> Enum.map(f)
-    |> Enum.reverse()
-    |> Integer.undigits(2)
-  end
-
-  defp gamma_digit({a, b}) when a > b, do: 0
-  defp gamma_digit(_), do: 1
-
-  defp epsilon_digit({a, b}) when a > b, do: 1
-  defp epsilon_digit(_), do: 0
 
   @spec count_bits_by_position(Enum.t()) :: [{integer(), {non_neg_integer(), non_neg_integer()}}]
   def count_bits_by_position(stream) do
