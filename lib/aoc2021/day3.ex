@@ -4,6 +4,8 @@ defmodule Aoc2021.Day3 do
   """
 
   defmodule Part1 do
+    @moduledoc false
+
     @spec gamma([{any, {integer, integer}}]) :: integer
     def gamma(list) do
       digits_to_number(list, &gamma_digit/1)
@@ -29,10 +31,64 @@ defmodule Aoc2021.Day3 do
     defp epsilon_digit(_), do: 0
   end
 
+  defmodule Part2 do
+    @moduledoc false
+
+    alias Aoc2021.Day3
+
+    def oxygen_generator_rating(input) do
+      l = input |> hd() |> String.length()
+      rating(input, l - 1, &oxygen_generator_criteria/1)
+    end
+
+    def co2_scrubber_rating(input) do
+      l = input |> hd() |> String.length()
+      rating(input, l - 1, &co2_scrubber_criteria/1)
+    end
+
+    defp oxygen_generator_criteria({z, o}) when z > o, do: "0"
+    defp oxygen_generator_criteria(_), do: "1"
+
+    defp co2_scrubber_criteria({z, o}) when z > o, do: "1"
+    defp co2_scrubber_criteria(_), do: "0"
+
+    def rating([x], _, _) do
+      {x, _} = Integer.parse(x, 2)
+      x
+    end
+
+    def rating(input, p, f) do
+      bit_counts =
+        input
+        |> Day3.count_bits_by_position()
+        |> Map.get(p)
+
+      mcv = f.(bit_counts)
+
+      nis =
+        Enum.filter(input, fn i ->
+          i
+          |> String.reverse()
+          |> String.at(p) == mcv
+        end)
+
+      rating(nis, p - 1, f)
+    end
+  end
+
   @spec solve_part1 :: integer
   def solve_part1() do
-    input = read_input() |> count_bits_by_position()
+    input = read_input() |> count_bits_by_position() |> Enum.sort()
     Part1.epsilon(input) * Part1.gamma(input)
+  end
+
+  def solve_part2() do
+    input = read_input("priv/day3/input.txt") |> Enum.to_list()
+
+    o2 = Part2.oxygen_generator_rating(input)
+    co2 = Part2.co2_scrubber_rating(input)
+
+    o2 * co2
   end
 
   @spec read_input() :: Enum.t()
@@ -47,11 +103,10 @@ defmodule Aoc2021.Day3 do
     |> Stream.reject(fn line -> line == "" end)
   end
 
-  @spec count_bits_by_position(Enum.t()) :: [{integer(), {non_neg_integer(), non_neg_integer()}}]
+  @spec count_bits_by_position(Enum.t()) :: %{integer() => {non_neg_integer(), non_neg_integer()}}
   def count_bits_by_position(stream) do
     stream
     |> Enum.reduce(%{}, &count_bits/2)
-    |> Enum.sort()
   end
 
   defp count_bits(line, acc) do
