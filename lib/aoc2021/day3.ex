@@ -51,18 +51,21 @@ defmodule Aoc2021.Day3 do
   end
 
   defp count_bits(line, acc) do
-    count_bits(line, acc, String.length(line) - 1)
+    {map, _} =
+      line
+      |> String.graphemes()
+      |> Enum.reduce({acc, String.length(line) - 1}, fn d, {acc, n} ->
+        {update_digit(d, acc, n), n - 1}
+      end)
+
+    map
   end
 
-  defp count_bits("", acc, _) do
-    acc
+  defp update_digit("1", acc, n) do
+    Map.update(acc, n, {0, 1}, fn {a, b} -> {a, b + 1} end)
   end
 
-  defp count_bits("1" <> rest, acc, n) do
-    count_bits(rest, Map.update(acc, n, {0, 1}, fn {a, b} -> {a, b + 1} end), n - 1)
-  end
-
-  defp count_bits("0" <> rest, acc, n) do
-    count_bits(rest, Map.update(acc, n, {1, 0}, fn {a, b} -> {a + 1, b} end), n - 1)
+  defp update_digit("0", acc, n) do
+    Map.update(acc, n, {1, 0}, fn {a, b} -> {a + 1, b} end)
   end
 end
