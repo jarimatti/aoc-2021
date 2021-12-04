@@ -8,7 +8,8 @@ defmodule Aoc2021.Day4 do
 
   def solve_part1(path \\ "priv/day4/input.txt") do
     {numbers, boards} =
-      File.stream!(path)
+      path
+      |> File.stream!()
       |> Parser.parse()
 
     {winner, number} = Enum.reduce_while(numbers, boards, &play/2)
@@ -17,7 +18,8 @@ defmodule Aoc2021.Day4 do
 
   def solve_part2(path \\ "priv/day4/input.txt") do
     {numbers, boards} =
-      File.stream!(path)
+      path
+      |> File.stream!()
       |> Parser.parse()
 
     {_, winners} = Enum.reduce(numbers, {boards, []}, &play2/2)
