@@ -12,14 +12,14 @@ defmodule Aoc2021.Day5 do
     path
     |> File.stream!()
     |> Parser.parse()
-    |> Enum.reject(fn l -> Line.orientation(l) == :other end)
+    |> Enum.reject(fn l -> Line.orientation(l) == :diagonal end)
     |> Enum.reduce(%{}, &add_points_to_chart/2)
     |> Enum.count(fn {_, v} -> v > 1 end)
   end
 
   @spec solve_part2() :: non_neg_integer()
   @spec solve_part2(Path.t()) :: non_neg_integer()
-  def solve_part2(path \\ "priv/day5/input.txt") do
+  def solve_part2(_path \\ "priv/day5/input.txt") do
     # stub
     0
   end

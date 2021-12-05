@@ -31,12 +31,12 @@ defmodule Aoc2021.Day5.Line do
     end
   end
 
-  @spec orientation(t()) :: :horizontal | :vertical | :other
+  @spec orientation(t()) :: :horizontal | :vertical | :diagonal
   def orientation({a, b}) do
     case {Point.to_tuple(a), Point.to_tuple(b)} do
       {{x, _}, {x, _}} -> :vertical
       {{_, y}, {_, y}} -> :horizontal
-      _ -> :other
+      _ -> :diagonal
     end
   end
 end
