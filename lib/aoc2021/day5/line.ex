@@ -21,14 +21,28 @@ defmodule Aoc2021.Day5.Line do
 
   @doc """
   Get the points that the line crosses.
-
-  ASSUME: The line is either horizontal or vertical.
   """
   @spec points(t()) :: [Point.t()]
-  def points({a, b}) do
+  def points(line) do
+    case orientation(line) do
+      o when o in [:horizontal, :vertical] -> horizontal_vertical_points(line)
+      :diagonal -> diagonal_points(line)
+    end
+  end
+
+  defp horizontal_vertical_points({a, b}) do
     for x <- Point.x(a)..Point.x(b), y <- Point.y(a)..Point.y(b) do
       Point.new(x, y)
     end
+  end
+
+  defp diagonal_points({a, b}) do
+    ys = Point.y(a)..Point.y(b)
+    xs = Point.x(a)..Point.x(b)
+
+    [xs, ys]
+    |> Enum.zip()
+    |> Enum.map(fn {x, y} -> Point.new(x, y) end)
   end
 
   @spec orientation(t()) :: :horizontal | :vertical | :diagonal

@@ -12,16 +12,19 @@ defmodule Aoc2021.Day5 do
     path
     |> File.stream!()
     |> Parser.parse()
-    |> Enum.reject(fn l -> Line.orientation(l) == :diagonal end)
+    |> Enum.filter(fn l -> Line.orientation(l) in [:horizontal, :vertical] end)
     |> Enum.reduce(%{}, &add_points_to_chart/2)
     |> Enum.count(fn {_, v} -> v > 1 end)
   end
 
   @spec solve_part2() :: non_neg_integer()
   @spec solve_part2(Path.t()) :: non_neg_integer()
-  def solve_part2(_path \\ "priv/day5/input.txt") do
-    # stub
-    0
+  def solve_part2(path \\ "priv/day5/input.txt") do
+    path
+    |> File.stream!()
+    |> Parser.parse()
+    |> Enum.reduce(%{}, &add_points_to_chart/2)
+    |> Enum.count(fn {_, v} -> v > 1 end)
   end
 
   defp add_points_to_chart(line, chart) do
