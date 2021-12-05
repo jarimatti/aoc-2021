@@ -1,4 +1,6 @@
 defmodule Aoc2021.Day4.Process.Board do
+  @moduledoc false
+
   use GenServer
 
   alias Aoc2021.Day4.BingoBoard
