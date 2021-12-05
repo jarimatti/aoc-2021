@@ -17,6 +17,13 @@ defmodule Aoc2021.Day5 do
     |> Enum.count(fn {_, v} -> v > 1 end)
   end
 
+  @spec solve_part2() :: non_neg_integer()
+  @spec solve_part2(Path.t()) :: non_neg_integer()
+  def solve_part2(path \\ "priv/day5/input.txt") do
+    # stub
+    0
+  end
+
   defp add_points_to_chart(line, chart) do
     line
     |> Line.points()
