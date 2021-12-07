@@ -23,34 +23,46 @@ defmodule Aoc2021.Day7 do
 
     input = read_input(path)
     k = median(input)
-    distance(input, k)
+    total_fuel_used(input, k, &crab_fuel_used1/2)
   end
 
-  defp mean(list) do
-    # Is not the mean
-    Enum.sum(list) / length(list)
+  @spec solve_part2() :: non_neg_integer()
+  @spec solve_part2(Path.t()) :: non_neg_integer()
+  def solve_part2(path \\ "priv/day7/input.txt") do
+    input = read_input(path)
+    search_minimum_fuel_used(input, &crab_fuel_used2/2)
   end
 
+
+  # Quick way to solve part 1, no need to search.
   defp median(list) do
-    # Median solves test data, but not full problem data
     sorted = Enum.sort(list)
     l = length(sorted)
     middle = div(l, 2)
     Enum.at(sorted, middle)
   end
 
-  defp brute_force_part1(list) do
+  defp search_minimum_fuel_used(list, f) do
     a = Enum.min(list)
     b = Enum.max(list)
 
     a..b
-    |> Enum.map(fn x -> {distance(list, x), x} end)
+    |> Enum.map(&total_fuel_used(list, &1, f))
     |> Enum.min()
   end
 
-  def distance(list, k) do
+  def total_fuel_used(list, k, f) do
     list
-    |> Enum.map(fn x -> abs(x - k) end)
+    |> Enum.map(fn x -> f.(x, k) end)
     |> Enum.sum()
+  end
+
+  def crab_fuel_used1(x, k) do
+    abs(x - k)
+  end
+
+  def crab_fuel_used2(x, k) do
+    delta = abs(x - k)
+    Enum.sum(0..delta)
   end
 end
