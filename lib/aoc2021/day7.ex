@@ -21,10 +21,9 @@ defmodule Aoc2021.Day7 do
     # This is same as minimising the squares of distances d(k) = (x - k)^2
     # where x = vector of initial values, k = the target value (some constant).
 
-    path
-    |> read_input()
-    |> brute_force_part1()
-    |> elem(0)
+    input = read_input(path)
+    k = median(input)
+    distance(input, k)
   end
 
   defp mean(list) do
