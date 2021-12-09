@@ -19,4 +19,8 @@ defmodule Aoc2021.Day6Test do
   test "part 2 solution should be correct" do
     assert Day6.solve_part2("priv/day6/input.txt") == 1_622_533_344_325
   end
+
+  test "parts 1 and 2 are solved using linear algebra and NX" do
+    assert Day6.LinAlg.solve() == {358_214, 1_622_533_344_325}
+  end
 end

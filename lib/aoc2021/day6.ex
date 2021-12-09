@@ -87,4 +87,55 @@ defmodule Aoc2021.Day6 do
     |> Parser.read_input()
     |> Part1.bucket_solve(256)
   end
+
+  defmodule LinAlg do
+    @moduledoc """
+    Solve day 6 using Nx.
+    """
+
+    @k0 Nx.tensor([
+          [0, 0, 0, 0, 0, 0, 1, 0, 1],
+          [1, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 1, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 1, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 1, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 1, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 1, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 1, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1, 0]
+        ])
+
+    @k80 Enum.reduce(2..80, @k0, fn _, t -> Nx.dot(t, @k0) end)
+
+    @k256 Enum.reduce(2..256, @k0, fn _, t -> Nx.dot(t, @k0) end)
+
+    def k0, do: @k0
+
+    def solve(path \\ "priv/day6/input.txt") do
+      initial =
+        path
+        |> Parser.read_input()
+        |> Enum.frequencies()
+        |> ensure_zeroes_present()
+        |> Enum.sort()
+        |> Enum.map(fn {_, v} -> v end)
+        |> Nx.tensor()
+
+      p1 = calculate(initial, @k80)
+      p2 = calculate(initial, @k256)
+
+      {p1, p2}
+    end
+
+    defp ensure_zeroes_present(histogram) do
+      Enum.reduce(0..8, histogram, fn k, acc -> Map.put_new(acc, k, 0) end)
+    end
+
+    defp calculate(initial, k) do
+      initial
+      |> Nx.dot(k)
+      |> Nx.sum()
+      |> Nx.to_number()
+    end
+  end
 end
