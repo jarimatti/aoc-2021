@@ -78,9 +78,9 @@ defmodule Aoc2021.Day8 do
     diff_to_4 = MapSet.size(MapSet.difference(d, Map.get(map, 4)))
 
     case {diff_to_1, diff_to_4} do
-      {3, _} -> 3
-      {_, 2} -> 5
-      {_, 3} -> 2
+      {3, 2} -> 3
+      {4, 2} -> 5
+      {4, 3} -> 2
     end
   end
 
