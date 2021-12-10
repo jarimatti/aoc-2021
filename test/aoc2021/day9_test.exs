@@ -8,9 +8,8 @@ defmodule Aoc2021.Day9Test do
     assert Day9.solve_part1("priv/day9/test-input.txt") == 15
   end
 
-  @tag :pending
   test "part 1 solution should be correct" do
-    assert Day9.solve_part1() == -1
+    assert Day9.solve_part1() == 603
   end
 
   @tag :pending
