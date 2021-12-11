@@ -23,8 +23,7 @@ defmodule Aoc2021.Day9 do
     |> Enum.map(fn lp -> basin(lp, map) end)
 
     |> Enum.map(&length/1)
-    |> Enum.sort()
-    |> Enum.reverse()
+    |> Enum.sort(:desc)
     |> Enum.take(3)
     |> Enum.product()
   end
