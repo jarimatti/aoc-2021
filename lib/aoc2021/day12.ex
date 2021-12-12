@@ -72,17 +72,55 @@ defmodule Aoc2021.Day12 do
 
   @spec solve_part1() :: non_neg_integer()
   @spec solve_part1(Path.t()) :: non_neg_integer()
-  def solve_part1(path \\ "priv/day11/input.txt") do
+  def solve_part1(path \\ "priv/day12/input.txt") do
     graph = Reader.read_input(path)
 
+    result =
+      graph
+      |> paths()
+      |> length()
+
     :digraph.delete(graph)
-    # stub
-    0
+
+    result
+  end
+
+  defp paths(g) do
+    paths(g, "start", MapSet.new(), ["start"], [])
+  end
+
+  defp paths(g, vertex, visited_small, path, paths) do
+    new_visited = add_if_small(visited_small, vertex, g)
+
+    g
+    |> :digraph.out_neighbours(vertex)
+    |> Enum.reject(fn v -> MapSet.member?(new_visited, v) end)
+    |> Enum.flat_map(fn
+      "end" ->
+        p = Enum.reverse(["end" | path])
+        [p | paths]
+
+      v ->
+        paths(g, v, new_visited, [v | path], paths)
+    end)
+  end
+
+  defp add_if_small(visited_small, vertex, g) do
+    case :digraph.vertex(g, vertex) do
+      {_, :start} ->
+        MapSet.put(visited_small, vertex)
+
+      {_, :small} ->
+        MapSet.put(visited_small, vertex)
+
+      {_, :big} ->
+        visited_small
+    end
   end
 
   @spec solve_part2() :: non_neg_integer()
   @spec solve_part2(Path.t()) :: non_neg_integer()
-  def solve_part2(path \\ "priv/day11/input.txt") do
+  def solve_part2(path \\ "priv/day12/input.txt") do
     graph = Reader.read_input(path)
 
     :digraph.delete(graph)
