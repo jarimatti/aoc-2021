@@ -21,7 +21,6 @@ defmodule Aoc2021.Day9 do
     map
     |> low_points()
     |> Enum.map(fn lp -> basin(lp, map) end)
-
     |> Enum.map(&length/1)
     |> Enum.sort(:desc)
     |> Enum.take(3)

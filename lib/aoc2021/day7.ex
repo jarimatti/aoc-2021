@@ -33,7 +33,6 @@ defmodule Aoc2021.Day7 do
     search_minimum_fuel_used(input, &crab_fuel_used2/2)
   end
 
-
   # Quick way to solve part 1, no need to search.
   defp median(list) do
     sorted = Enum.sort(list)
