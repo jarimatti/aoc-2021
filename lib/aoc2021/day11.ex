@@ -110,8 +110,27 @@ defmodule Aoc2021.Day11 do
 
   @spec solve_part2() :: non_neg_integer()
   @spec solve_part2(Path.t()) :: non_neg_integer()
-  def solve_part2(_path \\ "priv/day11/input.txt") do
-    # stub
-    0
+  def solve_part2(path \\ "priv/day11/input.txt") do
+    map = Reader.read_input(path)
+
+    first_all_flash_step(map)
+  end
+
+  defp first_all_flash_step(map) do
+    first_all_flash_step(map, 0, all_flash?(map))
+  end
+
+  defp first_all_flash_step(_, s, true), do: s
+
+  defp first_all_flash_step(map, s, _) do
+    new_map = step(map)
+
+    new_map
+    |> reset_flashed()
+    |> first_all_flash_step(s + 1, all_flash?(new_map))
+  end
+
+  def all_flash?(map) do
+    count_flashes(map) == map_size(map)
   end
 end
