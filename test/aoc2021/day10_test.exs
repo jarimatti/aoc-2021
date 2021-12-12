@@ -12,13 +12,11 @@ defmodule Aoc2021.Day10Test do
     assert Day10.solve_part1() == 462_693
   end
 
-  @tag :pending
   test "part 2 solution should be correct with test data" do
-    assert Day10.solve_part2("priv/day10/test-input.txt") == -1
+    assert Day10.solve_part2("priv/day10/test-input.txt") == 288_957
   end
 
-  @tag :pending
   test "part 2 solution should be correct" do
-    assert Day10.solve_part2() == -1
+    assert Day10.solve_part2() == 3_094_671_161
   end
 end

@@ -3,13 +3,6 @@ defmodule Aoc2021.Day10 do
   See https://adventofcode.com/2021/day/10
   """
 
-  @illegal_scores %{
-    ?) => 3,
-    ?] => 57,
-    ?} => 1197,
-    ?> => 25_137
-  }
-
   @type token() :: char()
 
   defmodule Reader do
@@ -38,7 +31,7 @@ defmodule Aoc2021.Day10 do
 
     @spec parse([Aoc2021.Day10.token()]) ::
             :ok
-            | :incomplete
+            | {:incomplete, [Aoc2021.Day10.token()]}
             | {:error, {:unexpected_token, Aoc2021.Day10.token(), non_neg_integer()}}
     def parse(line) do
       result =
@@ -48,7 +41,7 @@ defmodule Aoc2021.Day10 do
 
       case result do
         [] -> :ok
-        [_ | _] -> :incomplete
+        [_ | _] = stack -> {:incomplete, stack}
         {:error, reason} -> {:error, reason}
       end
     end
@@ -74,15 +67,53 @@ defmodule Aoc2021.Day10 do
   end
 
   defp error_score({:error, {:unexpected_token, token, _pos}}) do
-    Map.get(@illegal_scores, token, 0)
+    error_token_score(token)
   end
 
   defp error_score(_), do: 0
 
+  defp error_token_score(?)), do: 3
+  defp error_token_score(?]), do: 57
+  defp error_token_score(?}), do: 1197
+  defp error_token_score(?>), do: 25_137
+
   @spec solve_part2() :: non_neg_integer()
   @spec solve_part2(Path.t()) :: non_neg_integer()
-  def solve_part2(_path \\ "priv/day10/input.txt") do
-    # stub
-    0
+  def solve_part2(path \\ "priv/day10/input.txt") do
+    path
+    |> Reader.read_input()
+    |> Enum.map(&Parser.parse/1)
+    |> Enum.filter(&incomplete?/1)
+    |> Enum.map(&autocomplete_score/1)
+    |> median()
   end
+
+  defp median(scores) do
+    scores
+    |> Enum.sort()
+    |> Enum.at(div(length(scores), 2))
+  end
+
+  defp incomplete?({:incomplete, _}), do: true
+  defp incomplete?(_), do: false
+
+  defp autocomplete_score({:incomplete, stack}) do
+    Enum.reduce(stack, 0, &autocomplete_token_score/2)
+  end
+
+  defp autocomplete_token_score(token, acc) do
+    score = token |> closing_token() |> incomplete_token_score()
+
+    5 * acc + score
+  end
+
+  defp incomplete_token_score(?)), do: 1
+  defp incomplete_token_score(?]), do: 2
+  defp incomplete_token_score(?}), do: 3
+  defp incomplete_token_score(?>), do: 4
+
+  defp closing_token(?(), do: ?)
+  defp closing_token(?[), do: ?]
+  defp closing_token(?{), do: ?}
+  defp closing_token(?<), do: ?>
 end
