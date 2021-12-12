@@ -1,5 +1,5 @@
 defmodule Aoc2021.Day2Test do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Aoc2021.Day2
 
   test "part 1 produces correct result" do

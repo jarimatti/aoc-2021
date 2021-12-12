@@ -1,5 +1,5 @@
 defmodule Aoc2021.Day1Test do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Aoc2021.Day1
 
   test "increment count produces 7 for part 1 example" do
