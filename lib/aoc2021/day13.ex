@@ -95,11 +95,7 @@ defmodule Aoc2021.Day13 do
       |> Enum.split_with(&split.(&1))
 
     under = MapSet.new(under)
-
-    over =
-      over
-      |> Enum.map(&map.(&1))
-      |> MapSet.new()
+    over = MapSet.new(over, &map.(&1))
 
     MapSet.union(under, over)
   end
