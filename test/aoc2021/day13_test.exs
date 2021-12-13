@@ -5,7 +5,11 @@ defmodule Aoc2021.Day13Test do
   alias Aoc2021.Day13
 
   test "part 1 solution should be correct with test data" do
-    assert Day13.solve_part1("priv/day13/test-input.txt") == 17
+    assert Day13.solve_part1("priv/day13/test-input.txt") == 16
+  end
+
+  test "part 1 solution should not be 92" do
+    assert Day13.solve_part1() != 92
   end
 
   @tag :pending
