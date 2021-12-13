@@ -47,15 +47,90 @@ defmodule Aoc2021.Day13 do
   @spec solve_part1(Path.t()) :: non_neg_integer()
   def solve_part1(path \\ "priv/day13/input.txt") do
     {dots, instructions} = Reader.read_input(path)
-    IO.inspect(dots)
-    IO.inspect(instructions)
-    0
+
+    instructions
+    |> hd()
+    |> List.wrap()
+    |> apply_folds(dots)
+    |> MapSet.size()
   end
 
   @spec solve_part2() :: non_neg_integer()
   @spec solve_part2(Path.t()) :: non_neg_integer()
-  def solve_part2(_path \\ "priv/day13/input.txt") do
-    # stub
-    0
+  def solve_part2(path \\ "priv/day13/input.txt") do
+    {dots, instructions} = Reader.read_input(path)
+
+    dots =
+      instructions
+      |> apply_folds(dots)
+
+    output = format_dots(dots)
+    IO.puts(output)
+  end
+
+  defp apply_folds(instructions, dots) do
+    Enum.reduce(instructions, dots, &apply_fold/2)
+  end
+
+  defp apply_fold({:fold_x, x}, dots) do
+    reject = fn {xx, _} -> x == xx end
+    split = fn {xx, _} -> xx < x end
+    map = fn {xx, y} -> {x - (xx - x), y} end
+
+    apply_fold_with(dots, reject, split, map)
+  end
+
+  defp apply_fold({:fold_y, y}, dots) do
+    reject = fn {_, yy} -> y == yy end
+    split = fn {_, yy} -> yy < y end
+    map = fn {x, yy} -> {x, y - (yy - y)} end
+
+    apply_fold_with(dots, reject, split, map)
+  end
+
+  defp apply_fold_with(dots, reject, split, map) do
+    {under, over} =
+      dots
+      |> Enum.reject(&reject.(&1))
+      |> Enum.split_with(&split.(&1))
+
+    under = MapSet.new(under)
+
+    over =
+      over
+      |> Enum.map(&map.(&1))
+      |> MapSet.new()
+
+    MapSet.union(under, over)
+  end
+
+  defp format_dots(dots) do
+    max_x =
+      dots
+      |> Enum.map(fn {x, _} -> x end)
+      |> Enum.sort(:desc)
+      |> hd()
+
+    max_y =
+      dots
+      |> Enum.map(fn {_, y} -> y end)
+      |> Enum.sort(:desc)
+      |> hd()
+
+    lines =
+      for y <- 0..max_y do
+        list =
+          for x <- 0..max_x do
+            if MapSet.member?(dots, {x, y}) do
+              "X"
+            else
+              "."
+            end
+          end
+
+        Enum.join(list)
+      end
+
+    Enum.join(lines, "\n")
   end
 end
