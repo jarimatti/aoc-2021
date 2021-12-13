@@ -55,8 +55,8 @@ defmodule Aoc2021.Day13 do
     |> MapSet.size()
   end
 
-  @spec solve_part2() :: non_neg_integer()
-  @spec solve_part2(Path.t()) :: non_neg_integer()
+  @spec solve_part2() :: :ok
+  @spec solve_part2(Path.t()) :: :ok
   def solve_part2(path \\ "priv/day13/input.txt") do
     {dots, instructions} = Reader.read_input(path)
 
