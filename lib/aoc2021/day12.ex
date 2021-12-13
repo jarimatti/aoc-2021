@@ -90,7 +90,7 @@ defmodule Aoc2021.Day12 do
   end
 
   defp paths(g, vertex, visited_small, path, paths) do
-    new_visited = add_if_small(visited_small, vertex, g)
+    new_visited = add_if_small(visited_small, vertex, g, &mark_visit/2)
 
     g
     |> :digraph.out_neighbours(vertex)
@@ -105,26 +105,80 @@ defmodule Aoc2021.Day12 do
     end)
   end
 
-  defp add_if_small(visited_small, vertex, g) do
-    case :digraph.vertex(g, vertex) do
-      {_, :start} ->
-        MapSet.put(visited_small, vertex)
+  @spec solve_part2() :: non_neg_integer()
+  @spec solve_part2(Path.t()) :: non_neg_integer()
+  def solve_part2(path \\ "priv/day12/input.txt") do
+    graph = Reader.read_input(path)
 
-      {_, :small} ->
-        MapSet.put(visited_small, vertex)
+    result =
+      graph
+      |> paths_one_extra_visit()
+      |> length()
+
+    :digraph.delete(graph)
+
+    result
+  end
+
+  defp paths_one_extra_visit(g) do
+    paths_one_extra_visit(g, "start", %{}, ["start"], [])
+  end
+
+  defp paths_one_extra_visit(g, vertex, visited_small, path, paths) do
+    # Idea 1: map where count is the visited amount. (current attempt)
+    # Idea 2: keep using MapSet, add boolean flag if some small has been visited twice and branch based on that
+
+    g
+    |> :digraph.out_neighbours(vertex)
+    |> Enum.flat_map(fn
+      "end" ->
+        p = Enum.reverse(["end" | path])
+        [p | paths]
+
+      v ->
+        # recurse if conditions are met:
+        # - one small cave can be visited twice
+        # - other small caves can be visited only once
+
+        new_visited = add_if_small(visited_small, vertex, g, &mark_visit_one_extra/2)
+
+        case recurse_conditions?(new_visited, v) do
+          true -> paths_one_extra_visit(g, v, new_visited, [v | path], paths)
+          false -> []
+        end
+    end)
+  end
+
+  defp mark_visit(visited_small, vertex) do
+    MapSet.put(visited_small, vertex)
+  end
+
+  defp mark_visit_one_extra(visited_small, vertex) do
+    Map.update(visited_small, vertex, 1, fn x -> x + 1 end)
+  end
+
+  defp add_if_small(visited_small, vertex, g, adder) do
+    case :digraph.vertex(g, vertex) do
+      {_, t} when t in [:small, :start] ->
+        adder.(visited_small, vertex)
 
       {_, :big} ->
         visited_small
     end
   end
 
-  @spec solve_part2() :: non_neg_integer()
-  @spec solve_part2(Path.t()) :: non_neg_integer()
-  def solve_part2(path \\ "priv/day12/input.txt") do
-    graph = Reader.read_input(path)
+  defp recurse_conditions?(visited, vertex) do
+    any_seen_twice =
+      visited
+      |> Map.values()
+      |> Enum.member?(2)
 
-    :digraph.delete(graph)
-    # stub
-    0
+    seen_count = Map.get(visited, vertex, 0)
+
+    case {any_seen_twice, seen_count} do
+      {false, _} -> true
+      {true, 0} -> true
+      {true, _} -> false
+    end
   end
 end
