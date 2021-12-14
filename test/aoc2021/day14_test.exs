@@ -8,9 +8,24 @@ defmodule Aoc2021.Day14Test do
     assert Day14.solve_part1("priv/day14/test-input.txt") == 1588
   end
 
-  @tag :pending
+  test "part 1 step works" do
+    {s, map} = Day14.Reader.read_input("priv/day14/test-input.txt")
+
+    s = Day14.step(s, map)
+    assert s == 'NCNBCHB'
+
+    s = Day14.step(s, map)
+    assert s == 'NBCCNBBBCBHCB'
+
+    s = Day14.step(s, map)
+    assert s == 'NBBBCNCCNBBNBNBBCHBHHBCHB'
+
+    s = Day14.step(s, map)
+    assert s == 'NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB'
+  end
+
   test "part 1 solution should be correct" do
-    assert Day14.solve_part1() == -1
+    assert Day14.solve_part1() == 3697
   end
 
   @tag :pending
