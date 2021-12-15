@@ -88,23 +88,25 @@ defmodule Aoc2021.Day15 do
             Enum.reduce(
               ns,
               {came_from, g_score, f_score, open_set},
-              fn neighbour, {came_from, g_score, f_score, open_set} ->
-                tentative_g_score = get_score(g_score, current) + d(map, current, neighbour)
-
-                if tentative_g_score < get_score(g_score, neighbour) do
-                  came_from = Map.put(came_from, neighbour, current)
-                  g_score = Map.put(g_score, neighbour, tentative_g_score)
-                  f_score = Map.put(f_score, neighbour, tentative_g_score + h.(neighbour))
-                  open_set = MapSet.put(open_set, neighbour)
-
-                  {came_from, g_score, f_score, open_set}
-                else
-                  {came_from, g_score, f_score, open_set}
-                end
-              end
+              &step_neighbour(&1, &2, current, map, h)
             )
 
           recurse(map, goal, h, neighbours, open_set, came_from, g_score, f_score)
+      end
+    end
+
+    defp step_neighbour(neighbour, {came_from, g_score, f_score, open_set}, current, map, h) do
+      tentative_g_score = get_score(g_score, current) + d(map, current, neighbour)
+
+      if tentative_g_score < get_score(g_score, neighbour) do
+        came_from = Map.put(came_from, neighbour, current)
+        g_score = Map.put(g_score, neighbour, tentative_g_score)
+        f_score = Map.put(f_score, neighbour, tentative_g_score + h.(neighbour))
+        open_set = MapSet.put(open_set, neighbour)
+
+        {came_from, g_score, f_score, open_set}
+      else
+        {came_from, g_score, f_score, open_set}
       end
     end
 
@@ -158,8 +160,8 @@ defmodule Aoc2021.Day15 do
 
   @spec solve_part2() :: non_neg_integer()
   @spec solve_part2(Path.t()) :: non_neg_integer()
-  def solve_part2(_path \\ "priv/day15/input.txt") do
-    # stub
+  def solve_part2(path \\ "priv/day15/input.txt") do
+    {first_map, {first_max_x, first_max_y}} = Reader.read_map(path)
     0
   end
 end
