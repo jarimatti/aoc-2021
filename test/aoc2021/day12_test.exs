@@ -20,6 +20,7 @@ defmodule Aoc2021.Day12Test do
     assert Day12.solve_part2("priv/day12/test-input-3.txt") == 3509
   end
 
+  @tag timeout: 5_000
   test "part 2 solution should be correct" do
     assert Day12.solve_part2() == 99_448
   end
