@@ -22,9 +22,8 @@ defmodule Aoc2021.Day17Test do
     assert Day17.solve_part1() == 15_400
   end
 
-  @tag :pending
   test "part 2 solution should be correct with test data" do
-    assert Day17.solve_part2("priv/day17/test-input.txt") == -1
+    assert Day17.solve_part2("priv/day17/test-input.txt") == 112
   end
 
   @tag :pending

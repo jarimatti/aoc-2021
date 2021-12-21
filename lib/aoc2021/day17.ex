@@ -16,10 +16,24 @@ defmodule Aoc2021.Day17 do
   @spec solve_part2() :: non_neg_integer()
   @spec solve_part2(Path.t()) :: non_neg_integer()
   def solve_part2(path \\ "priv/day17/input.txt") do
-    {_xrange, _yrange} = read_input(path)
-    # We can count distinct v_y that hit the y range and v_x that hit the x range.
-    # The velocities are a cartesian product of the pairs (v_x, v_y) and so we can just multiply their sizes together.
-    0
+    {xrange, yrange} = read_input(path)
+
+    v0y_max = max_v0y(yrange)
+    v0y_min = min_v0y(yrange)
+    v0x_max = max_v0x(xrange)
+    v0x_min = min_v0x(xrange, v0x_max)
+
+    v0x = v0x_min..v0x_max
+    v0y = v0y_min..v0y_max
+
+    # Now we have the candidate range for initial velocities. Next up: filter
+    # and count only those that land in the box. Contrary to initial thoughts
+    # not all combinations work, these just give the extreme points.
+    v0 = for x <- v0x, y <- v0y, do: {x, y}
+    # TODO: Filter this.
+    IO.inspect(v0)
+
+    length(v0)
   end
 
   @spec read_input(Path.t()) :: {Range.t(), Range.t()}
@@ -65,6 +79,44 @@ defmodule Aoc2021.Day17 do
     |> Stream.take_while(fn vy0 -> vy0 >= 0 end)
     |> Stream.map(&max_height/1)
     |> Stream.filter(fn y_max -> hits_box(y_max, target, 0) end)
+    |> Stream.take(1)
+    |> Enum.to_list()
+    |> hd()
+  end
+
+  defp max_v0y(target) do
+    # This is a brute-force solution, just iterating down from some high maximum y velocity.
+    # Not elegant, but gets the job done. There is a formula for computing this, I'm sure.
+    10000
+    |> Stream.iterate(fn vy0 -> vy0 - 1 end)
+    |> Stream.take_while(fn vy0 -> vy0 >= 0 end)
+    |> Stream.filter(fn vy0 -> hits_box(max_height(vy0), target, 0) end)
+    |> Stream.take(1)
+    |> Enum.to_list()
+    |> hd()
+  end
+
+  defp min_v0y(target) do
+    # This is simple: minimum velocity shoots down and _barely_ hits the lowest point of target.
+    # Thus it is the lowest point of the target range.
+    #
+    # ASSUME: Target is below.
+    Enum.min(target)
+  end
+
+  defp max_v0x(target) do
+    # This is similar to min_v0y/1 above, only this time shoot towards target with maximum velocity that _barely_ hits the target.
+    # Any faster than this and the first point will already overshoot.
+    #
+    # ASSUME: target is to the right.
+    Enum.max(target)
+  end
+
+  defp min_v0x(target, v0x_max) do
+    0
+    |> Stream.iterate(fn v0x -> v0x + 1 end)
+    |> Stream.take_while(fn v0x -> v0x <= v0x_max end)
+    |> Stream.filter(fn v0x -> hits_box(max_height(v0x), target, 0) end)
     |> Stream.take(1)
     |> Enum.to_list()
     |> hd()
