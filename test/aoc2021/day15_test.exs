@@ -16,8 +16,8 @@ defmodule Aoc2021.Day15Test do
     assert Day15.solve_part2("priv/day15/test-input.txt") == 315
   end
 
-  @tag :pending
+  @tag timeout: 5_000
   test "part 2 solution should be correct" do
-    assert Day15.solve_part2() == -1
+    assert Day15.solve_part2() == 2979
   end
 end
