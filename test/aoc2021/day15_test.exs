@@ -8,7 +8,6 @@ defmodule Aoc2021.Day15Test do
     assert Day15.solve_part1("priv/day15/test-input.txt") == 40
   end
 
-  @tag timeout: 20_000
   test "part 1 solution should be correct" do
     assert Day15.solve_part1() == 656
   end

@@ -61,7 +61,8 @@ defmodule Aoc2021.Day15 do
     def a_star(map, start, goal, h, neighbours) do
       # TODO: The open_set really should be prioritised by f score.
       # Without priority in the worst case the engine will go through the whole map.
-      open_set = MapSet.new([start])
+      open_set = Heap.new(fn {_, a}, {_, b} -> a < b end)
+      open_set = Heap.push(open_set, {start, 0})
       came_from = %{}
 
       # Default value infinity
@@ -72,20 +73,13 @@ defmodule Aoc2021.Day15 do
     end
 
     defp recurse(map, goal, h, neighbours, open_set, came_from, g_score, f_score) do
-      {current, _} =
-        f_score
-        |> Enum.filter(fn {k, _} -> MapSet.member?(open_set, k) end)
-        |> Enum.min_by(fn {_, v} -> v end, fn -> :empty_f_score end)
+      {{current, _}, open_set} = Heap.split(open_set)
 
-      case {current == goal, MapSet.size(open_set) == 0} do
-        {true, _} ->
+      case current == goal do
+        true ->
           {:ok, reconstruct_path(came_from, current)}
 
-        {_, true} ->
-          {:error, :path_not_found}
-
-        _ ->
-          open_set = MapSet.delete(open_set, current)
+        false ->
           ns = neighbours.(current)
 
           {came_from, g_score, f_score, open_set} =
@@ -106,7 +100,7 @@ defmodule Aoc2021.Day15 do
         came_from = Map.put(came_from, neighbour, current)
         g_score = Map.put(g_score, neighbour, tentative_g_score)
         f_score = Map.put(f_score, neighbour, tentative_g_score + h.(neighbour))
-        open_set = MapSet.put(open_set, neighbour)
+        open_set = Heap.push(open_set, {neighbour, tentative_g_score})
 
         {came_from, g_score, f_score, open_set}
       else

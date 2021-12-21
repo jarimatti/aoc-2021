@@ -21,6 +21,7 @@ defmodule Aoc2021.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:heap, "~> 2.0"},
       {:dialyxir, "~> 1.1", only: [:dev], runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:nx, "~> 0.1.0-dev", github: "elixir-nx/nx", branch: "main", sparse: "nx"}
