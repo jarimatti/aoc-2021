@@ -44,6 +44,8 @@ defmodule Aoc2021.Day15 do
   defmodule AStar do
     @moduledoc """
     A* path search.
+
+    See https://en.wikipedia.org/wiki/A*_search_algorithm
     """
 
     @infinity 1_000_000
@@ -57,6 +59,8 @@ defmodule Aoc2021.Day15 do
           ) ::
             {:ok, [Aoc2021.Day15.pos()]} | {:error, :path_not_found}
     def a_star(map, start, goal, h, neighbours) do
+      # TODO: The open_set really should be prioritised by f score.
+      # Without priority in the worst case the engine will go through the whole map.
       open_set = MapSet.new([start])
       came_from = %{}
 
@@ -71,7 +75,7 @@ defmodule Aoc2021.Day15 do
       {current, _} =
         f_score
         |> Enum.filter(fn {k, _} -> MapSet.member?(open_set, k) end)
-        |> Enum.min_by(fn {_, v} -> v end, fn -> {{-1, -1}, -1} end)
+        |> Enum.min_by(fn {_, v} -> v end, fn -> :empty_f_score end)
 
       case {current == goal, MapSet.size(open_set) == 0} do
         {true, _} ->
@@ -161,7 +165,43 @@ defmodule Aoc2021.Day15 do
   @spec solve_part2() :: non_neg_integer()
   @spec solve_part2(Path.t()) :: non_neg_integer()
   def solve_part2(path \\ "priv/day15/input.txt") do
-    {first_map, {first_max_x, first_max_y}} = Reader.read_map(path)
-    0
+    {map, {max_x, max_y} = goal} =
+      path
+      |> Reader.read_map()
+      |> build_map()
+
+    start = {0, 0}
+    h = make_h(goal)
+    n = make_neighbours(max_x, max_y)
+
+    {:ok, path} = AStar.a_star(map, start, goal, h, n)
+
+    path
+    |> tl()
+    |> Enum.map(fn p -> Map.get(map, p) end)
+    |> Enum.sum()
+  end
+
+  defp increase_cell_value(x) when x > 9, do: rem(x, 10) + 1
+  defp increase_cell_value(x), do: x
+
+  defp build_map({initial, {max_x, max_y}}) do
+    row =
+      for n <- 0..4 do
+        Map.new(initial, fn {{x, y}, v} ->
+          {{x + n * (max_x + 1), y}, increase_cell_value(v + n)}
+        end)
+      end
+      |> Enum.reduce(%{}, &Map.merge/2)
+
+    map =
+      for n <- 0..4 do
+        Map.new(row, fn {{x, y}, v} ->
+          {{x, y + n * (max_y + 1)}, increase_cell_value(v + n)}
+        end)
+      end
+      |> Enum.reduce(%{}, &Map.merge/2)
+
+    {map, {(max_x + 1) * 5 - 1, (max_y + 1) * 5 - 1}}
   end
 end
