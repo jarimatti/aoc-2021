@@ -59,8 +59,6 @@ defmodule Aoc2021.Day15 do
           ) ::
             {:ok, [Aoc2021.Day15.pos()]} | {:error, :path_not_found}
     def a_star(map, start, goal, h, neighbours) do
-      # TODO: The open_set really should be prioritised by f score.
-      # Without priority in the worst case the engine will go through the whole map.
       open_set = Heap.new(fn {_, a}, {_, b} -> a < b end)
       open_set = Heap.push(open_set, {start, 0})
       came_from = %{}
